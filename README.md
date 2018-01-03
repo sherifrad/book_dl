@@ -1,13 +1,13 @@
 # book_dl
 .
 used modules:
-    urllib.request
-    urllib.parse
-    BeautifulSoup
-    requests
-    json
-    wget
-    sys
+    urllib.request, 
+    urllib.parse, 
+    BeautifulSoup, 
+    requests, 
+    json, 
+    wget, 
+    sys, 
     collections
     
 How to run::
