@@ -1,15 +1,12 @@
+#!/home/sherif/miniconda3/bin/python
 
-#Downloading Books from libgen
-#any suggestions sent to : dr.sherif1992@gmail.com
 
-#TODO: restore failed downloaded file (wget)
-#TODO: GUI app
-#TODO: add more sites to download books.
+#To Do: restore failed downloaded file (wget)
+#To Do: if searched by a previous searched  query flash a message to view the old search result.
 
 import urllib.request
 import urllib.parse
 from bs4 import BeautifulSoup
-import requests
 import json
 import wget
 from termcolor import cprint, colored 
@@ -28,6 +25,7 @@ def colorify_output(text, text2 = None,COLOR = None, on_COLOR = None):
 
 #The main function 
 def main():
+
     try:
         book_title = getBookTitle()
         result = search(book_title)
@@ -72,12 +70,14 @@ def search(book_title):
             return
     # url = 'http://libgen.io/json.php?ids=%s&fields=Title,Author,MD5,edition,id,year,filesize'%(",".join(ids))
     
-    url = 'http://libgen.io/json.php?ids=%s&fields=Title,Author,MD5,edition,id,year,filesize'%(",".join(ids))
+    url = 'http://libgen.io/json.php?ids=%s&fields=Title,Author,MD5,edition,id,year,filesize,extension'%(",".join(ids))
 
-    req = requests.get(url)
-    json = req.json()
-    print(json)
-    return json
+    # req = requests.get(url)
+    req = urllib.request.Request(url)
+    req = urllib.request.urlopen(req)
+    req = req.read().decode('utf-8')
+    json_resp = json.loads(req)
+    return json_resp
 
 
 #Get detailed book view : Book title,author,id, md5 and edition     
@@ -95,6 +95,7 @@ def print_result(result):
                 main_dict['Title'] = book['title']
                 main_dict['Author'] = book['author']
                 main_dict['edition'] = book['edition']
+                main_dict['Extension'] = book['extension']
                 main_dict['filesize'] = book['filesize']
                 main_dict['year'] = book['year']
                 main_dict['id'] = book['id']
@@ -114,10 +115,16 @@ def print_result(result):
                 count_id += 1
 
 
-def download(json):
+def download(json_resp):
+    """
+
+Downloading the file
+
+
+    """
     print('==================================================')          
     id = input('Please write the ID of the desired Book ==> ')
-    for book in json:
+    for book in json_resp:
 
         if id == book["serial_No"]:            
             print('You chose the following Book ==> %s'% book['title'])
@@ -134,4 +141,6 @@ def download(json):
                     wget.download(link)
                     print('\n') 
 
-main()
+if __name__ == "__main__":
+
+    main()
